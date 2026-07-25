@@ -1,49 +1,36 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { ChevronDownIcon } from "./icons";
-import { CATCH_PERIOD_OPTIONS } from "@/lib/mockData/kelompok";
+import { useState } from "react";
+import { PERIODE_OPTIONS } from "@/lib/mockData/kelompok";
 
 export default function PeriodDropdown({ value, onChange }) {
   const [open, setOpen] = useState(false);
-  const ref = useRef(null);
-
-  const selected = CATCH_PERIOD_OPTIONS.find((opt) => opt.value === value) || CATCH_PERIOD_OPTIONS[2];
-
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (ref.current && !ref.current.contains(event.target)) setOpen(false);
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  const selected = PERIODE_OPTIONS.find((o) => o.value === value) || PERIODE_OPTIONS[2];
 
   return (
-    <div className="relative" ref={ref}>
+    <div className="relative">
       <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-1.5 bg-slate-200 hover:bg-slate-300 transition-colors rounded-full px-4 py-2 text-sm font-semibold text-slate-800"
+        onClick={() => setOpen((v) => !v)}
+        className="flex items-center gap-1.5 rounded-full bg-gray-200 px-4 py-2 text-sm font-medium text-gray-800"
       >
         {selected.label}
-        <ChevronDownIcon />
+        <span aria-hidden>▾</span>
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-lg border border-slate-100 overflow-hidden z-10">
-          {CATCH_PERIOD_OPTIONS.map((option) => (
+        <div className="absolute right-0 z-10 mt-2 w-44 rounded-xl border border-gray-200 bg-white shadow-lg overflow-hidden">
+          {PERIODE_OPTIONS.map((opt) => (
             <button
-              key={option.value}
-              type="button"
+              key={opt.value}
               onClick={() => {
-                onChange(option.value);
+                onChange(opt.value);
                 setOpen(false);
               }}
-              className={`w-full text-left px-4 py-2.5 text-sm hover:bg-slate-50 ${
-                option.value === value ? "text-blue-700 font-semibold" : "text-slate-700"
+              className={`block w-full px-4 py-2.5 text-left text-sm hover:bg-gray-50 ${
+                opt.value === value ? "font-semibold text-blue-700" : "text-gray-700"
               }`}
             >
-              {option.label}
+              {opt.label}
             </button>
           ))}
         </div>

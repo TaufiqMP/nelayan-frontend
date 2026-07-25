@@ -1,32 +1,35 @@
+"use client";
+
 import Link from "next/link";
-import MemberItem from "./MemberItem";
-import { ChevronRightIcon } from "./icons";
+import MemberItem from "@/components/kelompok/MemberItem";
 
-const PREVIEW_COUNT = 2;
-
-export default function MemberList({ members = [] }) {
-  const preview = members.slice(0, PREVIEW_COUNT);
+/**
+ * @param {object[]} anggota - daftar anggota
+ * @param {number} [limit] - kalau diisi, hanya tampilkan N anggota pertama + link "Lihat Semua"
+ * @param {boolean} [showMenu] - tampilkan menu ⋮ (hapus anggota) per baris, hanya untuk Ketua
+ * @param {function} [onRemove]
+ */
+export default function MemberList({ anggota, limit, showMenu = false, onRemove }) {
+  const ditampilkan = limit ? anggota.slice(0, limit) : anggota;
+  const adaLebihBanyak = limit && anggota.length > limit;
 
   return (
-    <section className="px-5 pt-8">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-extrabold text-slate-900">Daftar Anggota</h2>
-        {/* Dummy link — halaman "Semua Anggota" belum dibuat, backend on progress */}
-        <Link
-          href="#"
-          className="flex items-center gap-1 text-blue-700 font-semibold hover:underline"
-        >
-          Lihat Semua
-          <ChevronRightIcon />
-        </Link>
+    <section>
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="text-xl font-bold text-gray-900">Daftar Anggota</h2>
+        {adaLebihBanyak && (
+          <Link
+            href="/kelompok/anggota"
+            className="text-sm font-medium text-blue-600 flex items-center gap-1"
+          >
+            Lihat Semua <span aria-hidden>›</span>
+          </Link>
+        )}
       </div>
 
-      <div className="flex flex-col gap-3">
-        {preview.length === 0 && (
-          <p className="text-slate-400 text-sm">Belum ada anggota di kelompok ini.</p>
-        )}
-        {preview.map((member) => (
-          <MemberItem key={member.id} member={member} isLeader={member.role === "Ketua"} />
+      <div className="space-y-3">
+        {ditampilkan.map((a) => (
+          <MemberItem key={a.id} anggota={a} showMenu={showMenu} onRemove={onRemove} />
         ))}
       </div>
     </section>

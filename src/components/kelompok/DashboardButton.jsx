@@ -1,17 +1,18 @@
-import Link from "next/link";
-import { GridIcon } from "./icons";
+"use client";
+
+import { useRouter } from "next/navigation";
 
 export default function DashboardButton() {
+  const router = useRouter();
+
   return (
-    <div className="px-5 pt-8 pb-4">
-      {/* Dummy href — halaman Dashboard Kelompok menyusul, backend on progress */}
-      <Link
-        href="#"
-        className="w-full flex items-center justify-center gap-2 bg-blue-700 hover:bg-blue-800 transition-colors text-white font-bold rounded-2xl py-4"
-      >
-        <GridIcon />
-        Lihat Dashboard Kelompok
-      </Link>
-    </div>
+    <button
+      // TODO: arahkan ke halaman dashboard/monitoring kelompok yang lebih lengkap
+      // begitu halaman itu dibuat (mis. grafik tren, breakdown per anggota, dst).
+      onClick={() => router.push("/kelompok/dashboard")}
+      className="w-full flex items-center justify-center gap-2 rounded-xl bg-blue-600 py-4 font-semibold text-white hover:bg-blue-700"
+    >
+      <span aria-hidden>▦</span> Lihat Dashboard Kelompok
+    </button>
   );
 }

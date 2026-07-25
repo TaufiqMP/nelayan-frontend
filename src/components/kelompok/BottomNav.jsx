@@ -2,32 +2,39 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { HomeIcon, UsersIcon, SettingsIcon } from "./icons";
 
 const NAV_ITEMS = [
-  { href: "/beranda", label: "Beranda", Icon: HomeIcon },
-  { href: "/kelompok", label: "Kelompok", Icon: UsersIcon },
-  { href: "/settings", label: "Settings", Icon: SettingsIcon },
+  { href: "/", label: "Beranda", icon: "🏠" },
+  { href: "/kelompok", label: "Kelompok", icon: "👥" },
+  { href: "/settings", label: "Settings", icon: "⚙️" },
 ];
 
 export default function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="sticky bottom-0 bg-white border-t border-slate-200 px-3 py-2">
-      <div className="max-w-md mx-auto flex items-center justify-around">
-        {NAV_ITEMS.map(({ href, label, Icon }) => {
-          const active = pathname === href;
+    <nav
+      className="fixed bottom-0 inset-x-0 mx-auto w-full border-t border-gray-200 bg-white px-3 py-2"
+      style={{ maxWidth: "430px" }}
+    >
+      <div className="flex items-center justify-around">
+        {NAV_ITEMS.map((item) => {
+          // "/" harus exact match, selain itu boleh startsWith (biar /kelompok/setup dkk tetap nge-highlight "Kelompok")
+          const active =
+            item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+
           return (
             <Link
-              key={href}
-              href={href}
-              className={`flex flex-col items-center gap-1 px-5 py-2 rounded-2xl transition-colors ${
-                active ? "bg-blue-700 text-white" : "text-slate-500 hover:text-slate-700"
+              key={item.href}
+              href={item.href}
+              className={`flex flex-col items-center gap-1 rounded-xl px-5 py-2 text-sm font-medium transition ${
+                active ? "bg-blue-600 text-white" : "text-gray-600"
               }`}
             >
-              <Icon className="w-6 h-6" />
-              <span className="text-xs font-semibold">{label}</span>
+              <span aria-hidden className="text-lg leading-none">
+                {item.icon}
+              </span>
+              {item.label}
             </Link>
           );
         })}

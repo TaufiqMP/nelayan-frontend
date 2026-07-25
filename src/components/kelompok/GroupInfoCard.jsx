@@ -1,45 +1,35 @@
-import { SailboatIcon } from "./icons";
+"use client";
 
-export default function GroupInfoCard({ group }) {
-  if (!group) return null;
-
-  const isActive = group.status === "AKTIF";
-
+export default function GroupInfoCard({ groupInfo }) {
   return (
-    <section className="px-5 pt-6">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-extrabold text-slate-900">Info Kelompok</h2>
-        <span
-          className={`px-4 py-1.5 rounded-full text-sm font-semibold ${
-            isActive ? "bg-emerald-100 text-emerald-700" : "bg-slate-200 text-slate-600"
-          }`}
-        >
-          {group.status}
+    <section>
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="text-xl font-bold text-gray-900">Info Kelompok</h2>
+        <span className="rounded-full bg-emerald-100 px-4 py-1 text-sm font-medium text-emerald-700">
+          {groupInfo.status === "aktif" ? "AKTIF" : groupInfo.status}
         </span>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+      <div className="rounded-2xl bg-white border border-gray-200 p-5">
         <div className="flex items-start gap-4">
-          <div className="w-16 h-16 shrink-0 rounded-2xl bg-blue-600 flex items-center justify-center">
-            <SailboatIcon className="w-8 h-8 text-white" />
+          <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-blue-600 text-2xl text-white">
+            <span aria-hidden>⛵</span>
           </div>
-          <div className="min-w-0">
-            <h3 className="text-xl font-extrabold text-blue-700 truncate">{group.name}</h3>
-            <p className="text-slate-700 font-medium mt-0.5">
-              Komoditas Utama {group.mainCommodity}
-            </p>
-            <p className="text-slate-400 text-sm mt-0.5">Kapasitas {group.capacity} Orang</p>
+          <div>
+            <h3 className="text-2xl font-bold text-blue-700">{groupInfo.nama}</h3>
+            <p className="text-gray-700">Komoditas Utama {groupInfo.komoditasUtama}</p>
+            <p className="text-gray-500">Kapasitas {groupInfo.kapasitas} Orang</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 mt-5">
-          <div className="bg-slate-100 rounded-xl p-4">
-            <p className="text-slate-500 text-sm">Ketua Kelompok</p>
-            <p className="text-slate-900 font-bold text-lg mt-1 truncate">{group.leaderName}</p>
+        <div className="mt-5 grid grid-cols-2 gap-3">
+          <div className="rounded-xl bg-gray-100 p-4">
+            <p className="text-sm text-gray-500">Ketua Kelompok</p>
+            <p className="font-semibold text-gray-900">{groupInfo.ketua}</p>
           </div>
-          <div className="bg-slate-100 rounded-xl p-4">
-            <p className="text-slate-500 text-sm">Anggota</p>
-            <p className="text-slate-900 font-bold text-lg mt-1">{group.memberCount} Orang</p>
+          <div className="rounded-xl bg-gray-100 p-4">
+            <p className="text-sm text-gray-500">Anggota</p>
+            <p className="font-semibold text-gray-900">{groupInfo.jumlahAnggota} Orang</p>
           </div>
         </div>
       </div>

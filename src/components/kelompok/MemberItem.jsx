@@ -1,90 +1,55 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { DotsVerticalIcon } from "./icons";
+import { useState } from "react";
 
-function initials(name) {
-  return name
-    .split(" ")
-    .map((part) => part[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
-}
-
-export default function MemberItem({ member, isLeader = false }) {
+export default function MemberItem({ anggota, showMenu = false, onRemove }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef(null);
-
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setMenuOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  // TODO(backend): wire these up once "Kelola Anggota" endpoints exist.
-  function handleLihatProfil() {
-    setMenuOpen(false);
-    alert(`Lihat profil ${member.name} (belum terhubung ke backend)`);
-  }
-
-  function handleHapusAnggota() {
-    setMenuOpen(false);
-    alert(`Hapus ${member.name} (belum terhubung ke backend — perlu alasan penghapusan)`);
-  }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 flex items-center justify-between">
-      <div className="flex items-center gap-3 min-w-0">
-        <div className="w-12 h-12 shrink-0 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center overflow-hidden">
-          {member.avatarUrl ? (
+    <div className="flex items-center justify-between rounded-xl bg-white border border-gray-200 p-4">
+      <div className="flex items-center gap-3">
+        <div className="h-12 w-12 rounded-full bg-gray-200 overflow-hidden flex-shrink-0">
+          {anggota.fotoProfil && (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={member.avatarUrl} alt={member.name} className="w-full h-full object-cover" />
-          ) : (
-            <span>{initials(member.name)}</span>
+            <img
+              src={anggota.fotoProfil}
+              alt={anggota.nama}
+              className="h-full w-full object-cover"
+            />
           )}
         </div>
-        <div className="min-w-0">
-          <p className="font-bold text-slate-900 truncate">{member.name}</p>
-          <p className="text-slate-400 text-sm">{member.role}</p>
+        <div>
+          <p className="font-semibold text-gray-900">{anggota.nama}</p>
+          <p className="text-sm text-gray-500">
+            {anggota.role === "ketua" ? "Ketua" : "Anggota"}
+          </p>
         </div>
       </div>
 
-      <div className="relative" ref={menuRef}>
-        <button
-          type="button"
-          aria-label={`Opsi untuk ${member.name}`}
-          onClick={() => setMenuOpen((open) => !open)}
-          className="p-2 text-slate-400 hover:text-slate-700 transition-colors"
-        >
-          <DotsVerticalIcon />
-        </button>
-
-        {menuOpen && (
-          <div className="absolute right-0 top-full mt-1 w-44 bg-white rounded-xl shadow-lg border border-slate-100 overflow-hidden z-10">
-            <button
-              type="button"
-              onClick={handleLihatProfil}
-              className="w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50"
-            >
-              Lihat Profil
-            </button>
-            {!isLeader && (
+      {showMenu && anggota.role !== "ketua" && (
+        <div className="relative">
+          <button
+            onClick={() => setMenuOpen((v) => !v)}
+            aria-label="Menu anggota"
+            className="text-gray-400 text-xl px-2"
+          >
+            ⋮
+          </button>
+          {menuOpen && (
+            <div className="absolute right-0 z-10 mt-1 w-40 rounded-lg border border-gray-200 bg-white shadow-lg">
               <button
-                type="button"
-                onClick={handleHapusAnggota}
-                className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50"
+                onClick={() => {
+                  setMenuOpen(false);
+                  onRemove?.(anggota);
+                }}
+                className="w-full px-4 py-2.5 text-left text-sm text-red-600 hover:bg-red-50"
               >
                 Hapus Anggota
               </button>
-            )}
-          </div>
-        )}
-      </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

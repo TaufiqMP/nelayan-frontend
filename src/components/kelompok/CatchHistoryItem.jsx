@@ -1,40 +1,39 @@
-import { SailboatIcon } from "./icons";
-import { formatDateShort, formatWeight, formatRupiahFull } from "@/lib/utils/format";
+"use client";
 
-const GRADE_STYLES = {
+import { formatRupiah } from "@/lib/utils/formatKelompok";
+
+const GRADE_STYLE = {
   A: "bg-emerald-100 text-emerald-700",
-  B: "bg-amber-100 text-amber-700",
-  C: "bg-slate-200 text-slate-600",
+  B: "bg-amber-100 text-amber-800",
+  C: "bg-gray-100 text-gray-600",
 };
 
-export default function CatchHistoryItem({ transaction }) {
-  const gradeClass = GRADE_STYLES[transaction.grade] || GRADE_STYLES.C;
-
+export default function CatchHistoryItem({ transaksi }) {
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 flex items-center justify-between gap-3">
-      <div className="w-14 h-14 shrink-0 rounded-xl bg-blue-50 flex items-center justify-center">
-        <SailboatIcon className="w-7 h-7 text-blue-600" />
+    <div className="flex items-center gap-4 rounded-xl bg-white border border-gray-200 p-4">
+      <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-xl bg-blue-50 text-2xl text-blue-600">
+        <span aria-hidden>⛵</span>
       </div>
 
-      <div className="flex-1 min-w-0">
-        <p className="text-slate-400 text-sm">
-          {formatDateShort(transaction.date)}{" "}
-          <span className="text-slate-900 font-bold">{transaction.commodity}</span>
+      <div className="flex-1">
+        <p className="text-sm text-gray-500">
+          {transaksi.tanggal} <span className="font-semibold text-gray-900">{transaksi.komoditas}</span>
         </p>
-        <span className={`inline-block mt-1 px-2.5 py-0.5 rounded-md text-xs font-semibold ${gradeClass}`}>
-          GRADE {transaction.grade}
+        <span
+          className={`inline-block mt-1 rounded-md px-2 py-0.5 text-xs font-medium ${
+            GRADE_STYLE[transaksi.grade] || GRADE_STYLE.C
+          }`}
+        >
+          GRADE {transaksi.grade}
         </span>
-        <div className="flex items-center gap-1 text-slate-700 font-bold mt-1.5">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4 text-slate-400">
-            <path d="M12 3v18M6 7h12M3 7l3-4 3 4-3 3-3-3ZM15 7l3-4 3 4-3 3-3-3ZM8 20h8" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          {formatWeight(transaction.weightKg)}
-        </div>
+        <p className="mt-1 flex items-center gap-1 text-gray-700">
+          <span aria-hidden>⚖️</span> {transaksi.beratKg}kg
+        </p>
       </div>
 
-      <div className="text-right shrink-0">
-        <p className="font-extrabold text-blue-700">{formatRupiahFull(transaction.amount)}</p>
-        <p className="text-slate-400 text-sm mt-1">{transaction.status}</p>
+      <div className="text-right">
+        <p className="font-bold text-blue-700">{formatRupiah(transaksi.bayaran)}</p>
+        <p className="text-sm text-gray-400">{transaksi.status}</p>
       </div>
     </div>
   );
