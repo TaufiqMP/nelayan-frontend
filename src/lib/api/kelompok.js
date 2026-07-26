@@ -132,6 +132,26 @@ export async function hapusAnggota(anggotaId, alasan) {
   return res.data;
 }
 
+/** Anggota ajukan keluar dari kelompok — belum ada UI-nya, baru API layer. */
+export async function ajukanKeluarKelompok() {
+  if (USE_MOCK) {
+    tulisStatusMock({ status: "belum_punya" }); // simplifikasi mock, langsung anggap keluar
+    return simulateDelay({ success: true });
+  }
+  const res = await apiFetch("/kelompok/leave-requests", { method: "POST" });
+  return res.data;
+}
+
+/** Ketua approve/reject permintaan keluar anggota. */
+export async function responPermintaanKeluar(requestId, keputusan) {
+  if (USE_MOCK) return simulateDelay({ success: true, requestId, keputusan });
+  const res = await apiFetch(`/kelompok/leave-requests/${requestId}`, {
+    method: "PATCH",
+    body: { decision: keputusan }, // "approved" | "rejected"
+  });
+  return res.data;
+}
+
 /** Info kelompok (nama, komoditas, kapasitas, ketua, jumlah anggota) untuk dashboard. */
 export async function getGroupInfo() {
   if (USE_MOCK) return simulateDelay(groupInfoMock);
@@ -147,20 +167,52 @@ export async function getGroupInfo() {
   };
 }
 
-/** ⚠️ BELUM ADA DI BACKEND — sama kayak getGroupInfo, ini modul Setoran. */
 export async function getCatchSummary(periode = "bulan_ini", rentang = null) {
-  if (USE_MOCK || true) {
+  if (USE_MOCK) {
     return simulateDelay(
       catchSummaryMock[periode] || { totalBeratKg: 0, totalPendapatan: 0, jenisTangkapan: [] }
     );
   }
-  const query = new URLSearchParams({ periode, ...(rentang || {}) });
-  return apiFetch(`/kelompok/saya/tangkapan/ringkasan?${query}`);
+
+  const params = { periode };
+  if (periode === "custom" && rentang) {
+    params.tanggal_mulai = rentang.dari;
+    params.tanggal_selesai = rentang.sampai;
+  }
+  const query = new URLSearchParams(params);
+
+  const res = await apiFetch(`/setoran/ringkasan?${query}`);
+  return {
+    totalBeratKg: res.data.total_tangkapan_kg,
+    totalPendapatan: res.data.total_hasil_transaksi,
+    jenisTangkapan: res.data.jenis_tangkapan.map((j) => ({
+      komoditasId: j.komoditas_id,
+      nama: j.nama,
+      beratKg: j.berat_kg,
+    })),
+  };
 }
 
-/** ⚠️ BELUM ADA DI BACKEND — sama kayak getGroupInfo, ini modul Setoran. */
+/** Riwayat transaksi hasil tangkapan (view-only) untuk satu periode. */
 export async function getCatchHistory(periode = "bulan_ini", rentang = null) {
-  if (USE_MOCK || true) return simulateDelay(catchHistoryMock[periode] || []);
-  const query = new URLSearchParams({ periode, ...(rentang || {}) });
-  return apiFetch(`/kelompok/saya/tangkapan/riwayat?${query}`);
+  if (USE_MOCK) return simulateDelay(catchHistoryMock[periode] || []);
+
+  const params = { periode };
+  if (periode === "custom" && rentang) {
+    params.tanggal_mulai = rentang.dari;
+    params.tanggal_selesai = rentang.sampai;
+  }
+  const query = new URLSearchParams(params);
+
+  const res = await apiFetch(`/setoran?${query}`);
+  // Mock-nya balikin array polos (gak ada pagination) — samain interface-nya
+  // biar komponen yang manggil gak perlu berubah. Info pagination ada di
+  // res.data.pagination kalo nanti mau dipake buat infinite-scroll dll.
+  return res.data.items.map((item) => ({
+    id: item.id,
+    tanggal: item.tanggal,
+    komoditas: item.komoditas,
+    beratKg: item.berat_kg,
+    bayaran: item.bayaran,
+  }));
 }

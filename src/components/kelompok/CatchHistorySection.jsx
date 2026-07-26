@@ -11,14 +11,17 @@ export default function CatchHistorySection() {
   const [summary, setSummary] = useState(null);
   const [riwayat, setRiwayat] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     setLoading(true);
+    setError(null);
     Promise.all([getCatchSummary(periode), getCatchHistory(periode)])
       .then(([summaryData, riwayatData]) => {
         setSummary(summaryData);
         setRiwayat(riwayatData);
       })
+      .catch((err) => setError(err.message || "Gagal memuat data tangkapan"))
       .finally(() => setLoading(false));
   }, [periode]);
 
@@ -31,7 +34,11 @@ export default function CatchHistorySection() {
 
       {loading && <p className="text-sm text-gray-400 py-4">Memuat...</p>}
 
-      {!loading && summary && (
+      {!loading && error && (
+        <p className="text-sm text-red-500 py-4">{error}</p>
+      )}
+
+      {!loading && !error && summary && (
         <div className="space-y-3">
           <CatchSummaryCards summary={summary} />
 
