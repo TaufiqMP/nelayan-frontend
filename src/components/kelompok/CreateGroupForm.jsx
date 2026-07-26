@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   TextInput,
   SelectInput,
@@ -10,15 +10,17 @@ import {
 import { ALAT_TANGKAP_OPTIONS } from "@/lib/mockData/kelompok";
 import { validasiFormKelompokBaru } from "@/lib/utils/validasiKelompok";
 import { ajukanKelompokBaru } from "@/lib/api/kelompok";
+import { getKomoditasList, getKantorCabangList } from "@/lib/api/reference";
 
 const FORM_AWAL = {
   namaKelompok: "",
+  komoditasUtamaId: "",
+  kantorCabangId: "",
+  noRegistrasiKapal: "",
   namaKapal: "",
   kapasitas: "",
   mesin: "",
   alatTangkap: "",
-  komoditasUtama: "",
-  fotoKapal: null,
 };
 
 export default function CreateGroupForm({ onSuccess }) {
@@ -26,6 +28,35 @@ export default function CreateGroupForm({ onSuccess }) {
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
+
+  const [komoditasOptions, setKomoditasOptions] = useState([]);
+  const [kantorCabangOptions, setKantorCabangOptions] = useState([]);
+  const [loadingReference, setLoadingReference] = useState(true);
+  const [referenceError, setReferenceError] = useState("");
+
+  useEffect(() => {
+    async function loadReference() {
+      setLoadingReference(true);
+      setReferenceError("");
+      try {
+        const [komoditas, kantorCabang] = await Promise.all([
+          getKomoditasList(),
+          getKantorCabangList(),
+        ]);
+        setKomoditasOptions(
+          komoditas.map((k) => ({ value: k.id, label: `${k.nama} (${k.satuan})` }))
+        );
+        setKantorCabangOptions(
+          kantorCabang.map((k) => ({ value: k.id, label: k.nama }))
+        );
+      } catch (err) {
+        setReferenceError("Gagal memuat data komoditas/kantor cabang. Coba muat ulang halaman.");
+      } finally {
+        setLoadingReference(false);
+      }
+    }
+    loadReference();
+  }, []);
 
   function updateField(field, value) {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -44,7 +75,7 @@ export default function CreateGroupForm({ onSuccess }) {
       const result = await ajukanKelompokBaru(form);
       onSuccess?.(result);
     } catch (err) {
-      setSubmitError("Gagal mengirim pengajuan. Silakan coba lagi.");
+      setSubmitError(err.message || "Gagal mengirim pengajuan. Silakan coba lagi.");
     } finally {
       setSubmitting(false);
     }
@@ -58,9 +89,11 @@ export default function CreateGroupForm({ onSuccess }) {
       </p>
 
       <div className="rounded-lg border-l-4 border-blue-500 bg-blue-50 p-4 text-sm text-blue-900">
-        Dengan memiliki kapal, Anda akan otomatis terdaftar sebagai{" "}
+        Dengan membuat kelompok, Anda akan otomatis terdaftar sebagai{" "}
         <span className="font-semibold">Ketua Kelompok</span>.
       </div>
+
+      <FieldError message={referenceError} />
 
       <div className="rounded-xl bg-white border border-gray-200 p-5 space-y-5">
         <TextInput
@@ -69,6 +102,34 @@ export default function CreateGroupForm({ onSuccess }) {
           value={form.namaKelompok}
           onChange={(e) => updateField("namaKelompok", e.target.value)}
           error={errors.namaKelompok}
+        />
+
+        <SelectInput
+          label="Komoditas Utama"
+          placeholder={loadingReference ? "Memuat..." : "Pilih komoditas"}
+          value={form.komoditasUtamaId}
+          onChange={(e) => updateField("komoditasUtamaId", e.target.value)}
+          options={komoditasOptions}
+          error={errors.komoditasUtamaId}
+          disabled={loadingReference}
+        />
+
+        <SelectInput
+          label="Kantor Cabang"
+          placeholder={loadingReference ? "Memuat..." : "Pilih kantor cabang"}
+          value={form.kantorCabangId}
+          onChange={(e) => updateField("kantorCabangId", e.target.value)}
+          options={kantorCabangOptions}
+          error={errors.kantorCabangId}
+          disabled={loadingReference}
+        />
+
+        <TextInput
+          label="No. Registrasi Kapal"
+          placeholder="Contoh: KP-2026-00123"
+          value={form.noRegistrasiKapal}
+          onChange={(e) => updateField("noRegistrasiKapal", e.target.value)}
+          error={errors.noRegistrasiKapal}
         />
 
         <TextInput
@@ -106,38 +167,6 @@ export default function CreateGroupForm({ onSuccess }) {
           options={ALAT_TANGKAP_OPTIONS}
           error={errors.alatTangkap}
         />
-
-        <TextInput
-          label="Komoditas Utama"
-          placeholder="Contoh: Tongkol, Cakalang, Udang"
-          value={form.komoditasUtama}
-          onChange={(e) => updateField("komoditasUtama", e.target.value)}
-          error={errors.komoditasUtama}
-        />
-
-        <div>
-          <label className="block text-sm font-medium text-gray-800 mb-1.5">
-            Foto Kapal
-          </label>
-          <label
-            htmlFor="foto-kapal"
-            className="flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 py-10 cursor-pointer hover:border-blue-400 transition"
-          >
-            <span aria-hidden className="text-2xl">⬆️</span>
-            <span className="text-blue-600 font-medium">
-              {form.fotoKapal ? form.fotoKapal.name : "Ketuk untuk unggah file"}
-            </span>
-            <span className="text-xs text-gray-400">Maks. 10 MB</span>
-            <input
-              id="foto-kapal"
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => updateField("fotoKapal", e.target.files?.[0] || null)}
-            />
-          </label>
-          <FieldError message={errors.fotoKapal} />
-        </div>
       </div>
 
       <p className="text-sm text-gray-500">
@@ -146,7 +175,7 @@ export default function CreateGroupForm({ onSuccess }) {
 
       <FieldError message={submitError} />
 
-      <PrimaryButton type="submit" icon="➤" loading={submitting}>
+      <PrimaryButton type="submit" icon="➤" loading={submitting || loadingReference}>
         Ajukan Kelompok Baru
       </PrimaryButton>
     </form>

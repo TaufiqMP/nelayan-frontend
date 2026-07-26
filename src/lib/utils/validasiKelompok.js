@@ -4,6 +4,7 @@
 
 const MAKS_UKURAN_FOTO_MB = 10;
 
+/*
 export function validasiFormKelompokBaru(form) {
   const errors = {};
 
@@ -31,15 +32,41 @@ export function validasiFormKelompokBaru(form) {
 
   return { valid: Object.keys(errors).length === 0, errors };
 }
+*/
 
+// Validasi form Buat Kelompok Baru (ketua kapal)
+export function validasiFormKelompokBaru(form) {
+  const errors = {};
+
+  if (!form.namaKelompok || form.namaKelompok.trim().length < 3) {
+    errors.namaKelompok = "Nama kelompok minimal 3 karakter";
+  }
+
+  if (!form.komoditasUtamaId) {
+    errors.komoditasUtamaId = "Pilih komoditas utama";
+  }
+
+  if (!form.kantorCabangId) {
+    errors.kantorCabangId = "Pilih kantor cabang";
+  }
+
+  if (!form.noRegistrasiKapal || form.noRegistrasiKapal.trim().length < 3) {
+    errors.noRegistrasiKapal = "Nomor registrasi kapal wajib diisi (minimal 3 karakter)";
+  }
+
+  return { valid: Object.keys(errors).length === 0, errors };
+}
+
+// Validasi form Gabung Kelompok (nelayan non-pemilik kapal)
 export function validasiFormGabungKelompok(form) {
   const errors = {};
 
-  if (form.pengalamanTahun === "" || Number(form.pengalamanTahun) < 0) {
-    errors.pengalamanTahun = "Isi pengalaman melaut (boleh 0).";
-  }
   if (!form.kelompokId) {
-    errors.kelompokId = "Pilih salah satu kelompok untuk diajukan.";
+    errors.kelompokId = "Pilih kelompok yang ingin diajukan.";
+  }
+
+  if (form.pengalamanTahun !== "" && Number(form.pengalamanTahun) < 0) {
+    errors.pengalamanTahun = "Pengalaman melaut tidak boleh negatif.";
   }
 
   return { valid: Object.keys(errors).length === 0, errors };

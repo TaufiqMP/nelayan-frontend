@@ -15,9 +15,12 @@ import { getStatusKelompokSaya, getGroupInfo, getDaftarAnggota } from "@/lib/api
 
 export default function KelompokPage() {
   const [status, setStatus] = useState(null); // null = loading
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    getStatusKelompokSaya().then(setStatus);
+    getStatusKelompokSaya()
+      .then(setStatus)
+      .catch((err) => setError(err.message || "Gagal memuat status kelompok"));
   }, []);
 
   return (
@@ -34,7 +37,11 @@ export default function KelompokPage() {
       </header>
 
       <main>
-        {status === null && (
+        {error && (
+          <p className="text-center text-red-500 py-24">{error}</p>
+        )}
+
+        {!error && status === null && (
           <p className="text-center text-gray-400 py-24">Memuat...</p>
         )}
 
