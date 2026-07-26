@@ -7,7 +7,10 @@ import {
   groupInfoMock,
   catchSummaryMock,
   catchHistoryMock,
+  monitorTangkapanRingkasanMock,
+  riwayatTripMock,
 } from "@/lib/mockData/kelompok";
+import { statistikKomoditasMock, trenPendapatanMock } from "@/lib/mockData/statistikKelompok";
 
 const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK !== "false";
 
@@ -88,7 +91,19 @@ export async function hapusAnggota(anggotaId, alasan) {
   });
 }
 
-/** Info kelompok (nama, komoditas, kapasitas, ketua, jumlah anggota) untuk dashboard. */
+/** Ringkasan untuk halaman "Monitor Hasil Tangkapan" (Total Berat, komoditas utama, pendapatan). */
+export async function getMonitorTangkapanRingkasan() {
+  if (USE_MOCK) return simulateDelay(monitorTangkapanRingkasanMock);
+  // TODO: GET /api/kelompok/saya/tangkapan/ringkasan-monitor
+  return apiFetch("/kelompok/saya/tangkapan/ringkasan-monitor");
+}
+
+/** Riwayat per trip melaut (bukan per transaksi penjualan) untuk halaman Monitor Hasil Tangkapan. */
+export async function getRiwayatTrip() {
+  if (USE_MOCK) return simulateDelay(riwayatTripMock);
+  // TODO: GET /api/kelompok/saya/tangkapan/trip
+  return apiFetch("/kelompok/saya/tangkapan/trip");
+}
 export async function getGroupInfo() {
   if (USE_MOCK) return simulateDelay(groupInfoMock);
   // TODO: GET /api/kelompok/saya/info
@@ -117,4 +132,18 @@ export async function getCatchHistory(periode = "bulan_ini", rentang = null) {
   // TODO: GET /api/kelompok/saya/tangkapan/riwayat?periode=...&dari=...&sampai=...
   const query = new URLSearchParams({ periode, ...(rentang || {}) });
   return apiFetch(`/kelompok/saya/tangkapan/riwayat?${query}`);
+}
+
+/** Statistik komposisi komoditas kelompok (persentase per jenis ikan). */
+export async function getStatistikKomoditas() {
+  if (USE_MOCK) return simulateDelay(statistikKomoditasMock);
+  // TODO: GET /api/kelompok/saya/statistik/komoditas
+  return apiFetch("/kelompok/saya/statistik/komoditas");
+}
+
+/** Tren pendapatan mingguan kelompok. */
+export async function getTrenPendapatan() {
+  if (USE_MOCK) return simulateDelay(trenPendapatanMock);
+  // TODO: GET /api/kelompok/saya/statistik/tren-pendapatan
+  return apiFetch("/kelompok/saya/statistik/tren-pendapatan");
 }

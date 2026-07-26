@@ -115,3 +115,62 @@ export const catchHistoryMock = {
   ],
   rentang_tanggal: [],
 };
+
+// Data untuk halaman "Monitor Hasil Tangkapan" (src/app/kelompok/tangkapan) —
+// laporan per trip melaut, beda granularitas dari catchHistoryMock di atas
+// (yang per transaksi penjualan).
+export const monitorTangkapanRingkasanMock = {
+  totalBeratKg: 148,
+  komoditasUtama: "Tuna",
+  labelKualitas: "Kualitas Ekspor",
+  totalPendapatan: 150000000,
+  labelPeriode: "Bulan Ini",
+};
+
+export const riwayatTripMock = [
+  {
+    id: "trip-001",
+    namaKapal: "Bahari Jaya",
+    tanggal: "12 Mei 2024",
+    waktu: "05:30 WIB",
+    status: "success",
+    ikanUtama: "Tuna Sirip Kuning",
+    totalBeratKg: 45,
+  },
+  {
+    id: "trip-002",
+    namaKapal: "Bahari Jaya",
+    tanggal: "10 Mei 2024",
+    waktu: "14:20 WIB",
+    status: "success",
+    ikanUtama: "Cakalang",
+    totalBeratKg: 32,
+  },
+  {
+    id: "trip-003",
+    namaKapal: "Bahari Jaya",
+    tanggal: "08 Mei 2024",
+    waktu: "06:00 WIB",
+    status: "success",
+    ikanUtama: "Tongkol",
+    totalBeratKg: 28,
+  },
+  {
+    id: "trip-004",
+    namaKapal: "Bahari Jaya",
+    tanggal: "05 Mei 2024",
+    waktu: "05:45 WIB",
+    status: "success",
+    ikanUtama: "Tuna Sirip Kuning",
+    totalBeratKg: 25,
+  },
+  {
+    id: "trip-005",
+    namaKapal: "Bahari Jaya",
+    tanggal: "02 Mei 2024",
+    waktu: "07:10 WIB",
+    status: "success",
+    ikanUtama: "Kerapu",
+    totalBeratKg: 18,
+  },
+];

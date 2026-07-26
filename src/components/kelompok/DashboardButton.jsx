@@ -7,8 +7,6 @@ export default function DashboardButton() {
 
   return (
     <button
-      // TODO: arahkan ke halaman dashboard/monitoring kelompok yang lebih lengkap
-      // begitu halaman itu dibuat (mis. grafik tren, breakdown per anggota, dst).
       onClick={() => router.push("/kelompok/dashboard")}
       className="w-full flex items-center justify-center gap-2 rounded-xl bg-blue-600 py-4 font-semibold text-white hover:bg-blue-700"
     >
