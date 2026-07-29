@@ -2,28 +2,18 @@ import "./globals.css";
 
 export const metadata = {
   title: "Pasar Bahari",
-  description: "Aplikasi manajemen kelompok nelayan",
+  description: "Solusi digital terpercaya untuk potensi komoditas bahari Indonesia",
 };
 
-// Lebar frame HP. 430px kira-kira lebar iPhone Pro Max / Android besar -
-// cukup lega tapi masih kerasa "mobile". Ubah di sini kalau mau beda.
-const MOBILE_FRAME_WIDTH = "430px";
-
+// Root layout HARUS ada <html>/<body> - jangan hapus. Tapi jangan taruh
+// styling frame HP di sini lagi, itu sekarang ada di
+// src/app/(mobile)/layout.js supaya khusus halaman Nelayan/Customer saja.
+// Halaman Admin (src/app/admin/...) sengaja full-width desktop, tidak
+// dibungkus frame ini.
 export default function RootLayout({ children }) {
   return (
     <html lang="id">
-      <body className="text-gray-900 antialiased">
-        {/* Wrapper full-viewport, background abu-abu buat area kosong di kiri-kanan saat dibuka di desktop */}
-        <div className="min-h-screen bg-gray-200 flex justify-center">
-          {/* "Frame" HP: lebar dibatasi, di-center, background putih/abu terang seperti app */}
-          <div
-            className="w-full min-h-screen bg-gray-50 shadow-xl relative"
-            style={{ maxWidth: MOBILE_FRAME_WIDTH }}
-          >
-            {children}
-          </div>
-        </div>
-      </body>
+      <body className="text-gray-900 antialiased">{children}</body>
     </html>
   );
 }
